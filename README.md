@@ -37,6 +37,13 @@ Notes:
 - `NIM_MAX_MODEL_LEN=4096` is a safe default for 8GB GPUs (e.g., RTX 4070 Laptop).
 - If you run Docker from Windows PowerShell, set `LOCAL_NIM_CACHE` to a Windows path (for example `C:\Users\<you>\.cache\nim`).
 
+## Web interface
+
+The UI is a lightweight NGINX-served page for quick testing:
+- Chat window + input + send
+- "Ingest docs" button to load data from `./data/`
+- Uses relative `/v1/*` and `/ingest` paths (no CORS needed)
+
 ## NIM standalone (verified on RTX 4070)
 
 ```powershell
@@ -61,6 +68,7 @@ curl -X POST http://localhost:8080/ingest
 ```
 
 By default, it loads `.txt` and `.md` files from `./data/`.
+To refresh the knowledge base, drop new files into `./data/` and re-run `/ingest`.
 
 ## Example chat completion
 
