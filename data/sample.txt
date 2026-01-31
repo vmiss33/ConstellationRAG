@@ -1,0 +1,3 @@
+﻿This is a sample document for ConstellationRAG.
+
+Add your own .txt or .md files into the data/ folder and re-run /ingest.

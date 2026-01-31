@@ -1,0 +1,53 @@
+﻿services:
+  nim:
+    image: nvcr.io/nim/meta/llama-3.2-1b-instruct:1.12.0
+    env_file:
+      - .env
+    environment:
+      NGC_API_KEY: ${NGC_API_KEY}
+      NIM_MODEL_PROFILE: ${NIM_MODEL_PROFILE}
+      NIM_MAX_MODEL_LEN: ${NIM_MAX_MODEL_LEN}
+      NIM_MAX_NUM_SEQS: ${NIM_MAX_NUM_SEQS}
+    shm_size: 16gb
+    ports:
+      - "8000:8000"
+    volumes:
+      - ${LOCAL_NIM_CACHE}:/opt/nim/.cache
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - capabilities: [gpu]
+    networks:
+      - ragnet
+
+  app:
+    build: ./app
+    environment:
+      - NIM_BASE_URL=http://nim:8000
+      - NIM_MODEL_ID=meta/llama-3.2-1b-instruct
+      - TOP_K=4
+    volumes:
+      - ./data:/data:ro
+    ports:
+      - "8080:8080"
+    depends_on:
+      - nim
+    networks:
+      - ragnet
+
+  ui:
+    build: ./ui
+    ports:
+      - "3000:80"
+    volumes:
+      - ./ui/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ui/static:/usr/share/nginx/html:ro
+    depends_on:
+      - app
+    networks:
+      - ragnet
+
+networks:
+  ragnet:
+    driver: bridge
